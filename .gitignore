@@ -29,3 +29,5 @@ coverage
 
 # Automatic Vue Router generated files
 typed-router.d.ts
+
+.env
