@@ -72,6 +72,7 @@ onKeyDown(
           })
         } else {
           historyResults.value = []
+          showResult.value = undefined
           notify({
             type: 'success',
             text: 'Resultados anteriores limpiados'
