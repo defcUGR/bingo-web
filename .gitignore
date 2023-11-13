@@ -26,3 +26,6 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# Automatic Vue Router generated files
+typed-router.d.ts
