@@ -19,7 +19,8 @@
       <p class="break-words w-[90vw] mb-2">
         <span v-for="item in historyResults" :key="item" class="mr-1">{{ item }}</span>
       </p>
-      <p>Pulsa <kbd class="kbd">Espacio</kbd> para generar el siguiente símbolo</p>
+      <p class="mb-2">Pulsa <kbd class="kbd">Espacio</kbd> para generar el siguiente símbolo</p>
+      <p>Pulsa <kbd class="kbd">Ctrl+Retroceso</kbd> para resetear los resultados</p>
     </div>
   </main>
 </template>
@@ -27,7 +28,7 @@
 <script setup lang="ts">
 import { usePresenterTokenStore } from '@/stores/presenterToken'
 import { IconArrowUpRight } from '@tabler/icons-vue'
-import { onKeyDown } from '@vueuse/core'
+import { onKeyDown, useKeyModifier } from '@vueuse/core'
 import { io } from 'socket.io-client'
 import { computed, Ref, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -58,6 +59,29 @@ const showName = computed(() => {
   return NUMBERS[parseInt(showResult.value) - 1]
 })
 
+const controlKey = useKeyModifier('Control')
+onKeyDown(
+  ['Backspace'],
+  () => {
+    if (controlKey.value) {
+      socket.emit('clear', { authToken: tokenStore.token }, (cbk: { error: string | null }) => {
+        if (cbk.error) {
+          notify({
+            type: 'error',
+            text: cbk.error
+          })
+        } else {
+          historyResults.value = []
+          notify({
+            type: 'success',
+            text: 'Resultados anteriores limpiados'
+          })
+        }
+      })
+    }
+  },
+  { dedupe: true }
+)
 onKeyDown(
   ['Spacebar', ' '],
   () => {
@@ -66,12 +90,22 @@ onKeyDown(
       'next',
       {
         bingo: selectedBingo,
-        authToken: 'Limc62hquMHk8LGzURZpmhaKSetTq7z2JxD53Xuo'
+        authToken: tokenStore.token
       },
-      (incoming: { result: string; id: number; bingo: string }) => {
-        console.info('incoming', incoming)
+      (
+        incoming:
+          | { error: string; result: undefined }
+          | { error: null; result: { result: string; id: number; bingo: string } }
+      ) => {
+        if (incoming.error) {
+          notify({
+            type: 'error',
+            text: incoming.error
+          })
+          return
+        }
         if (showResult.value) historyResults.value.push(showResult.value)
-        showResult.value = incoming.result
+        showResult.value = incoming.result?.result
       }
     )
   },

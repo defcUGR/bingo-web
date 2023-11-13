@@ -1,8 +1,8 @@
 <template>
   <RouterView />
-  <notifications position="bottom center">
+  <notifications position="top left" class="ml-4">
     <template #body="props">
-      <div class="alert flex flex-row mb-4" :class="`alert-${props.item.type}`">
+      <div class="alert flex flex-row mt-4" :class="`alert-${props.item.type}`">
         <component
           class="flex-grow-0 flex-shrink-0"
           :is="notificationComponent(props.item.type)"

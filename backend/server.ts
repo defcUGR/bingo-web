@@ -14,6 +14,23 @@ const io = new Server(httpServer)
 
 const NUMBERS = Array.from(range(1, 99))
 
+type CallbackResultType = (
+  cbk:
+    | {
+        error: string
+      }
+    | {
+        error: null
+        result: {
+          id: number
+          result: string
+          bingo: string
+        }
+      }
+) => void
+
+type CallbackClearType = (cbk: { error: string | null }) => void
+
 io.of('presenter').on('connection', (socket) => {
   console.info('connected to presenter')
   socket.on(
@@ -26,9 +43,20 @@ io.of('presenter').on('connection', (socket) => {
         bingo: 'numbers' | 'periodicTable' | 'symbols'
         authToken: string
       },
-      callback
+      callback: CallbackResultType
     ) => {
-      if (authToken !== BINGO_PRESENTER_AUTH_TOKEN) return
+      if (authToken !== BINGO_PRESENTER_AUTH_TOKEN) {
+        callback({
+          error: 'Token de presentador errónea'
+        })
+        return
+      }
+      if ((await prisma.result.count()) === NUMBERS.length) {
+        callback({
+          error: 'Todos los números usados'
+        })
+        return
+      }
 
       const getResult: () => string = {
         numbers: () => draw(NUMBERS)?.toString()
@@ -48,13 +76,42 @@ io.of('presenter').on('connection', (socket) => {
 
       io.emit('result', next.result)
 
-      callback(next)
+      callback({ error: null, result: next })
+    }
+  )
+
+  socket.on(
+    'clear',
+    async (
+      {
+        bingo,
+        authToken
+      }: {
+        bingo: 'numbers' | 'periodicTable' | 'symbols'
+        authToken: string
+      },
+      callback: CallbackClearType
+    ) => {
+      if (authToken !== BINGO_PRESENTER_AUTH_TOKEN) {
+        callback({
+          error: 'Token de presentador errónea'
+        })
+        return
+      }
+
+      prisma.result
+        .deleteMany({
+          where: {
+            bingo
+          }
+        })
+        .then(() => callback({ error: null }))
+        .catch((e) => callback({ error: e.toString() }))
     }
   )
 })
 
 app.get('/api/authPresenter', (req, res) => {
-  console.info('qpi', req.query['token'], !req.query['token'])
   if (!req.query['token']) res.end()
   res.json(req.query['token'] === BINGO_PRESENTER_AUTH_TOKEN)
 })
