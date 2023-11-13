@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@kyvg/vue3-notification':
+    specifier: ^3.0.2
+    version: 3.0.2(vue@3.3.8)
   '@prisma/client':
     specifier: 5.5.2
     version: 5.5.2(prisma@5.5.2)
@@ -451,6 +454,14 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
+
+  /@kyvg/vue3-notification@3.0.2(vue@3.3.8):
+    resolution: {integrity: sha512-t6PWPWggVqehX0BJZbqOttfKe3oUOrkgYoNQWSx8gwz8+pIRygQNT5MrewaIATdiU3bf//Yyto/wEm7vYl17Uw==}
+    peerDependencies:
+      vue: ^3.0.0
+    dependencies:
+      vue: 3.3.8(typescript@5.2.2)
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}

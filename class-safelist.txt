@@ -1,0 +1,4 @@
+alert-error
+alert-warning
+alert-success
+alert-info
