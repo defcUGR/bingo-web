@@ -1,9 +1,10 @@
 const express = require('express')
 import * as http from 'http'
 import { Server } from 'socket.io'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, type Result } from '@prisma/client'
 import { draw } from 'radash'
 import * as fs from 'fs'
+import type { AuthedEvent, BingoJSON, CallbackClearType, CallbackResultType } from './types'
 
 const BINGO_PRESENTER_AUTH_TOKEN = process.env.BINGO_PRESENTER_AUTH_TOKEN
 
@@ -13,24 +14,7 @@ const app = express()
 const httpServer = http.createServer(app)
 const io = new Server(httpServer)
 
-const BINGOS = JSON.parse(fs.readFileSync('./bingos.json', 'utf8'))
-
-type CallbackResultType = (
-  cbk:
-    | {
-        error: string
-      }
-    | {
-        error: null
-        result: {
-          id: number
-          result: string
-          bingo: string
-        }
-      }
-) => void
-
-type CallbackClearType = (cbk: { error: string | null }) => void
+const BINGOS = JSON.parse(fs.readFileSync('./bingos.json', 'utf8')) as BingoJSON
 
 io.of('presenter').on('connection', (socket) => {
   console.info('connected to presenter')
@@ -42,8 +26,7 @@ io.of('presenter').on('connection', (socket) => {
         authToken
       }: {
         bingo: string
-        authToken: string
-      },
+      } & AuthedEvent,
       callback: CallbackResultType
     ) => {
       if (authToken !== BINGO_PRESENTER_AUTH_TOKEN) {
@@ -97,8 +80,7 @@ io.of('presenter').on('connection', (socket) => {
         authToken
       }: {
         bingo: string
-        authToken: string
-      },
+      } & AuthedEvent,
       callback: CallbackClearType
     ) => {
       if (authToken !== BINGO_PRESENTER_AUTH_TOKEN) {
