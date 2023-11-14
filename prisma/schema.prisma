@@ -5,6 +5,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
+//* Zod schemas generator https://github.com/chrishoermann/zod-prisma-types
+// generator zod {
+//   provider                  = "npx zod-prisma-types"
+//   output                    = "./schemas"
+//   createRelationValuesTypes = true
+// }
+
+//* Schema documentation generator https://github.com/pantharshit00/prisma-docs-generator/
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "./docs"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")

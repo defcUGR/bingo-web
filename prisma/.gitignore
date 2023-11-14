@@ -1,2 +1,6 @@
+# Database file
 *.db
 *.db-journal
+
+# Generated docs
+docs/
