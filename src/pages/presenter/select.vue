@@ -21,9 +21,9 @@
         </label>
         <select class="select" v-model="selectedBingo">
           <option disabled selected :value="null">-- Seleccionar --</option>
-          <option value="numbers">Números</option>
-          <option value="periodicTable">Tabla Periódica</option>
-          <option value="symbols">Símbolos</option>
+          <option v-for="bingo in bingos" :key="bingo.key" :value="bingo.key">
+            {{ bingo.value }}
+          </option>
         </select>
       </div>
 
@@ -50,7 +50,9 @@ const { notify } = useNotification()
 const router = useRouter()
 const tokenStore = usePresenterTokenStore()
 
-const selectedBingo = ref(null)
+const loadingBingos = ref(true)
+const bingos = ref([] as { key: string; value: string }[])
+const selectedBingo = ref('')
 
 const loadingToBingo = ref(false)
 const toBingo = async () => {
@@ -79,4 +81,17 @@ const toBingo = async () => {
   }
   router.push(`/presenter/ongoing?bingo=${selectedBingo.value}`)
 }
+
+;(async () => {
+  const [err, data] = await tryit(fetch)(`http://localhost:3000/api/bingos`)
+  loadingBingos.value = false
+  if (err) {
+    notify({
+      text: 'Error al cargar los bingos disponibles',
+      type: 'error'
+    })
+    return
+  }
+  bingos.value = await data.json()
+})()
 </script>

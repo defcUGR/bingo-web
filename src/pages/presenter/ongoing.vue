@@ -52,12 +52,8 @@ const socket = io('http://localhost:3000/presenter')
 
 const selectedBingo = route.query.bingo
 const showResult: Ref<undefined | string> = ref()
+const showName: Ref<undefined | string> = ref()
 const historyResults = ref([] as string[])
-
-const showName = computed(() => {
-  if (!showResult.value) return null
-  return NUMBERS[parseInt(showResult.value) - 1]
-})
 
 const controlKey = useKeyModifier('Control')
 onKeyDown(
@@ -96,7 +92,10 @@ onKeyDown(
       (
         incoming:
           | { error: string; result: undefined }
-          | { error: null; result: { result: string; id: number; bingo: string } }
+          | {
+              error: null
+              result: { result: { key: string; value: string }; id: number; bingo: string }
+            }
       ) => {
         if (incoming.error) {
           notify({
@@ -106,7 +105,8 @@ onKeyDown(
           return
         }
         if (showResult.value) historyResults.value.push(showResult.value)
-        showResult.value = incoming.result?.result
+        showResult.value = incoming.result?.result.key
+        showName.value = incoming.result?.result.value
       }
     )
   },
