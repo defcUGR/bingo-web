@@ -52,7 +52,7 @@ const tokenStore = usePresenterTokenStore()
 
 const loadingBingos = ref(true)
 const bingos = ref([] as { key: string; value: string }[])
-const selectedBingo = ref('')
+const selectedBingo = ref(null)
 
 const loadingToBingo = ref(false)
 const toBingo = async () => {
