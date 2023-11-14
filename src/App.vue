@@ -14,10 +14,20 @@
       </div>
     </template>
   </notifications>
+
+  <div
+    v-if="socketOffline"
+    class="bg-opacity-75 bg-zinc-900 w-screen h-screen fixed z-50 inset-0 flex flex-row items-center justify-center"
+  >
+    <span class="loading loading-ring loading-lg mr-4"></span>
+    <p>Conectando al servidor...</p>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { IconAlertTriangle, IconCircleCheck, IconCircleX, IconInfoCircle } from '@tabler/icons-vue'
+import { io } from 'socket.io-client'
+import { ref } from 'vue'
 
 const notificationComponent = (type: string) =>
   ({
@@ -26,4 +36,12 @@ const notificationComponent = (type: string) =>
     success: IconCircleCheck,
     info: IconInfoCircle
   })[type]
+
+const socketOffline = ref(true)
+const socket = io('http://localhost:3000')
+
+socket.on('connect', () => {
+  socketOffline.value = false
+  socket.disconnect()
+})
 </script>
