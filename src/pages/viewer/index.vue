@@ -19,7 +19,7 @@
 import { IconArrowUpRight } from '@tabler/icons-vue'
 import { onKeyDown, useKeyModifier } from '@vueuse/core'
 import { io } from 'socket.io-client'
-import { computed, Ref, ref } from 'vue'
+import { computed, type Ref, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotification } from '@kyvg/vue3-notification'
 
