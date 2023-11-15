@@ -1,7 +1,9 @@
 <template>
   <main class="relative flex flex-col justify-center items-center min-h-screen w-screen">
     <div class="absolute top-4">
-      <h1 class="!inline-block">Vista de presentador: {{ selectedBingo }}</h1>
+      <h1 class="!inline-block">
+        Vista de presentador: {{ availableBingosStore.selected?.value }}
+      </h1>
       <button class="!inline-block btn btn-ghost btn-sm ml-2" @click="backSelect">
         <span class="underline">Cambiar bingo</span>
         <IconArrowUpRight class="inline max-h-full mb-0.5" />
@@ -27,20 +29,20 @@
 
 <script setup lang="ts">
 import { usePresenterTokenStore } from '@/stores/presenterToken'
+import { useAvailableBingosStore } from '@/stores/availableBingos'
 import { IconArrowUpRight } from '@tabler/icons-vue'
 import { onKeyDown, useKeyModifier } from '@vueuse/core'
 import { io } from 'socket.io-client'
-import { computed, Ref, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { NUMBERS } from '../../names'
+import { type Ref, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useNotification } from '@kyvg/vue3-notification'
 
 const router = useRouter()
-const route = useRoute()
 const { notify } = useNotification()
 const tokenStore = usePresenterTokenStore()
+const availableBingosStore = useAvailableBingosStore()
 
-if (!tokenStore.token) {
+if (!tokenStore.token || !availableBingosStore.selected) {
   router.push('/presenter/select')
   notify({
     text: 'Vista restringida a presentador',
@@ -50,7 +52,6 @@ if (!tokenStore.token) {
 
 const socket = io('http://localhost:3000/presenter')
 
-const selectedBingo = route.query.bingo
 const showResult: Ref<undefined | string> = ref()
 const showName: Ref<undefined | string> = ref()
 const historyResults = ref([] as string[])
@@ -60,21 +61,25 @@ onKeyDown(
   ['Backspace'],
   () => {
     if (controlKey.value) {
-      socket.emit('clear', { authToken: tokenStore.token }, (cbk: { error: string | null }) => {
-        if (cbk.error) {
-          notify({
-            type: 'error',
-            text: cbk.error
-          })
-        } else {
-          historyResults.value = []
-          showResult.value = undefined
-          notify({
-            type: 'success',
-            text: 'Resultados anteriores limpiados'
-          })
+      socket.emit(
+        'clear',
+        { bingo: availableBingosStore.selected!.key, authToken: tokenStore.token },
+        (cbk: { error: string | null }) => {
+          if (cbk.error) {
+            notify({
+              type: 'error',
+              text: cbk.error
+            })
+          } else {
+            historyResults.value = []
+            showResult.value = undefined
+            notify({
+              type: 'success',
+              text: 'Resultados anteriores limpiados'
+            })
+          }
         }
-      })
+      )
     }
   },
   { dedupe: true }
@@ -86,7 +91,7 @@ onKeyDown(
     socket.emit(
       'next',
       {
-        bingo: selectedBingo,
+        bingo: availableBingosStore.selected!.key,
         authToken: tokenStore.token
       },
       (
@@ -94,7 +99,7 @@ onKeyDown(
           | { error: string; result: undefined }
           | {
               error: null
-              result: { result: { key: string; value: string }; id: number; bingo: string }
+              result: { key: string; value: string }
             }
       ) => {
         if (incoming.error) {
@@ -105,8 +110,8 @@ onKeyDown(
           return
         }
         if (showResult.value) historyResults.value.push(showResult.value)
-        showResult.value = incoming.result?.result.key
-        showName.value = incoming.result?.result.value
+        showResult.value = incoming.result?.key
+        showName.value = incoming.result?.value
       }
     )
   },

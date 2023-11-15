@@ -57,18 +57,17 @@ io.of('presenter').on('connection', (socket) => {
         result = getResult()
       }
 
-      const next = await prisma.result.create({
+      await prisma.result.create({
         data: {
-          bingo,
+          bingo: bingo,
           result: result.key
         }
       })
 
-      io.of('presenter').emit('result', { key: result.key, value: result.value })
       io.of('viewer').emit('result', result.key)
-      io.of('volunteer').emit('result', { key: result.key, index: result.index })
+      io.of('volunteer').emit('result', { bingo: bingo, key: result.key, index: result.index })
 
-      callback({ error: null, result: next })
+      callback({ error: null, result: { key: result.key, value: result.value } })
     }
   )
 
@@ -98,6 +97,8 @@ io.of('presenter').on('connection', (socket) => {
         })
         .then(() => callback({ error: null }))
         .catch((e) => callback({ error: e.toString() }))
+
+      io.of('volunteer').emit('clear', bingo)
     }
   )
 })
@@ -121,6 +122,28 @@ app.get('/api/bingos', (req, res) => {
       return { key: bingo.key, value: bingo.value }
     })
   )
+})
+
+app.get('/api/history', async (req, res) => {
+  const results = [] as {
+    key: string
+    value: string
+    results: {
+      key: string
+      index: number
+    }[]
+  }[]
+  const dbResults = await prisma.result.findMany()
+  for (const bingo of BINGOS) {
+    const dbFiltered = dbResults
+      .filter((result) => result.bingo === bingo.key)
+      .map((result) => {
+        const bingoResult = bingo.results.find((r) => r.key === result.result)
+        return { key: result.result, index: bingoResult!.index }
+      })
+    results.push({ key: bingo.key, value: bingo.value, results: dbFiltered })
+  }
+  res.json(results)
 })
 
 // Start the server listening on port 3000

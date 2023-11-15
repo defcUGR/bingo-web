@@ -21,7 +21,7 @@
         </label>
         <select class="select" v-model="selectedBingo">
           <option disabled selected :value="null">-- Seleccionar --</option>
-          <option v-for="bingo in bingos" :key="bingo.key" :value="bingo.key">
+          <option v-for="bingo in availableBingosStore.bingos" :key="bingo.key" :value="bingo.key">
             {{ bingo.value }}
           </option>
         </select>
@@ -42,21 +42,25 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { usePresenterTokenStore } from '../../stores/presenterToken'
+import { usePresenterTokenStore } from '@/stores/presenterToken'
+import { useAvailableBingosStore } from '@/stores/availableBingos'
 import { tryit } from 'radash'
 import { useNotification } from '@kyvg/vue3-notification'
 
 const { notify } = useNotification()
 const router = useRouter()
 const tokenStore = usePresenterTokenStore()
+const availableBingosStore = useAvailableBingosStore()
 
 const loadingBingos = ref(true)
-const bingos = ref([] as { key: string; value: string }[])
 const selectedBingo = ref(null)
 
 const loadingToBingo = ref(false)
 const toBingo = async () => {
   if (!(tokenStore.token && selectedBingo)) return
+  availableBingosStore.selected = availableBingosStore.bingos!.find(
+    (b) => b.key === selectedBingo.value
+  )!
   loadingToBingo.value = true
   // console.info('res', await fetch('http://localhost:3000/api/authPresenter?query=one'))
   const [err, data] = await tryit(fetch)(
@@ -79,7 +83,7 @@ const toBingo = async () => {
     loadingToBingo.value = false
     return
   }
-  router.push(`/presenter/ongoing?bingo=${selectedBingo.value}`)
+  router.push(`/presenter/ongoing`)
 }
 
 ;(async () => {
@@ -92,6 +96,6 @@ const toBingo = async () => {
     })
     return
   }
-  bingos.value = await data.json()
+  availableBingosStore.bingos = await data.json()
 })()
 </script>

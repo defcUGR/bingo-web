@@ -1,5 +1,3 @@
-import type { Result } from '@prisma/client'
-
 export type BingoJSON = Array<{
   key: string
   value: string
@@ -17,7 +15,10 @@ export type CallbackResultType = (
       }
     | {
         error: null
-        result: Result
+        result: {
+          key: string
+          value: string
+        }
       }
 ) => void
 
