@@ -64,7 +64,7 @@ io.of('presenter').on('connection', (socket) => {
         }
       })
 
-      io.of('viewer').emit('result', result.key)
+      io.of('viewer').emit('result', result.value)
       io.of('volunteer').emit('result', { bingo: bingo, key: result.key, index: result.index })
 
       callback({ error: null, result: { key: result.key, value: result.value } })

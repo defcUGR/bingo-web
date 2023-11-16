@@ -25,7 +25,7 @@
       <p v-else-if="selectedBingoHistory?.length === 0" class="mt-4">
         Aun no hay ningún resultado para mostrar
       </p>
-      <div v-else class="flex mt-4 w-10/12 flex-wrap justify-center">
+      <div v-else v-auto-animate class="flex mt-4 w-10/12 flex-wrap justify-center">
         <div
           v-for="result in selectedBingoHistory"
           :key="result.key"
