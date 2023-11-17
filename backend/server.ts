@@ -42,7 +42,7 @@ io.of('presenter').on('connection', (socket) => {
         })
         return
       }
-      if ((await prisma.result.count()) === BINGO['results'].length) {
+      if ((await prisma.result.count({ where: { bingo } })) === BINGO['results'].length) {
         callback({
           error: 'Todos los resultados usados'
         })

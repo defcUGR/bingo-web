@@ -11,7 +11,7 @@
     </div>
 
     <div
-      class="h-24 w-24 flex items-center justify-center rounded-lg bg-base-content text-primary-focus py-4 px-5 text-6xl font-semibold"
+      class="h-24 w-24 flex items-center justify-center rounded-lg bg-base-300 text-secondary dark:bg-base-content dark:text-primary-focus py-4 px-5 text-6xl font-semibold"
     >
       {{ showResult ?? '...' }}
     </div>
