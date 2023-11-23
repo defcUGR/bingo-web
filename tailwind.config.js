@@ -3,7 +3,11 @@ module.exports = {
   darkMode: 'media',
   content: ['./index.html', './src/**/*.{vue,js,ts}', './class-safelist.txt'],
   theme: {
-    extend: {}
+    extend: {
+      fontFamily: {
+        'alex-brush': ['Alex Brush', 'sans-serif']
+      }
+    }
   },
   plugins: [require('@tailwindcss/typography'), require('daisyui')],
   daisyui: {

@@ -1,8 +1,6 @@
 <template>
   <main class="relative flex flex-col justify-center items-center min-h-screen w-screen">
-    <div class="absolute top-4 mx-8">
-      <img :src="LogoBingo" />
-    </div>
+    <h1 class="absolute top-4 mx-8 text-8xl font-alex-brush font-bold text-center">Bingo 25 N</h1>
     <div
       v-if="showResult"
       ref="animation"
@@ -17,7 +15,6 @@
 import { io } from 'socket.io-client'
 import { type Ref, ref } from 'vue'
 import { useAutoAnimate } from '@formkit/auto-animate/vue'
-import LogoBingo from '@/assets/LogoBingoClaro.svg'
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string
 
 const socket = io(`${BACKEND_BASE_URL}/viewer`)

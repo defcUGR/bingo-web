@@ -14,6 +14,7 @@
     "start:backend": "node backend/server.js"
   },
   "dependencies": {
+    "@fontsource/alex-brush": "^5.0.17",
     "@formkit/auto-animate": "^0.8.1",
     "@kyvg/vue3-notification": "^3.0.2",
     "@prisma/client": "5.5.2",
