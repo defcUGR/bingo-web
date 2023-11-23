@@ -18,8 +18,9 @@ import { io } from 'socket.io-client'
 import { type Ref, ref } from 'vue'
 import { useAutoAnimate } from '@formkit/auto-animate/vue'
 import LogoBingo from '@/assets/LogoBingoClaro.svg'
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string
 
-const socket = io('http://localhost:3000/viewer')
+const socket = io(`${BACKEND_BASE_URL}/viewer`)
 
 const showResult: Ref<undefined | string> = ref()
 

@@ -46,6 +46,7 @@ import { usePresenterTokenStore } from '@/stores/presenterToken'
 import { useAvailableBingosStore } from '@/stores/availableBingos'
 import { tryit } from 'radash'
 import { useNotification } from '@kyvg/vue3-notification'
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string
 
 const { notify } = useNotification()
 const router = useRouter()
@@ -64,7 +65,7 @@ const toBingo = async () => {
   loadingToBingo.value = true
   // console.info('res', await fetch('http://localhost:3000/api/authPresenter?query=one'))
   const [err, data] = await tryit(fetch)(
-    `http://localhost:3000/api/authPresenter?token=${tokenStore.token}`
+    `${BACKEND_BASE_URL}/api/authPresenter?token=${tokenStore.token}`
   )
   console.info('ress', data, err)
   if (err) {
@@ -87,7 +88,7 @@ const toBingo = async () => {
 }
 
 ;(async () => {
-  const [err, data] = await tryit(fetch)(`http://localhost:3000/api/bingos`)
+  const [err, data] = await tryit(fetch)(`${BACKEND_BASE_URL}/api/bingos`)
   loadingBingos.value = false
   if (err) {
     notify({

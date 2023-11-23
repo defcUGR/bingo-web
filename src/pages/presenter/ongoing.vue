@@ -36,6 +36,7 @@ import { io } from 'socket.io-client'
 import { type Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNotification } from '@kyvg/vue3-notification'
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string
 
 const router = useRouter()
 const { notify } = useNotification()
@@ -50,7 +51,7 @@ if (!tokenStore.token || !availableBingosStore.selected) {
   })
 }
 
-const socket = io('http://localhost:3000/presenter')
+const socket = io(`${BACKEND_BASE_URL}/presenter`)
 
 const showResult: Ref<undefined | string> = ref()
 const showName: Ref<undefined | string> = ref()

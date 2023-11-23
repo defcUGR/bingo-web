@@ -44,6 +44,7 @@ import { io } from 'socket.io-client'
 import { tryit } from 'radash'
 import { useNotification } from '@kyvg/vue3-notification'
 import { useAvailableBingosStore } from '@/stores/availableBingos'
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string
 
 const { notify } = useNotification()
 const availableBingosStore = useAvailableBingosStore()
@@ -71,7 +72,7 @@ const selectedBingoHistory = computed(() => {
 })
 
 ;(async () => {
-  const [err, data] = await tryit(fetch)(`http://localhost:3000/api/bingos`)
+  const [err, data] = await tryit(fetch)(`${BACKEND_BASE_URL}/api/bingos`)
   loadingBingos.value = false
   if (err) {
     notify({
@@ -84,7 +85,7 @@ const selectedBingoHistory = computed(() => {
 })()
 ;(async () => {
   loadingHistory.value = true
-  const [err, data] = await tryit(fetch)(`http://localhost:3000/api/history`)
+  const [err, data] = await tryit(fetch)(`${BACKEND_BASE_URL}/api/history`)
   loadingHistory.value = false
   if (err) {
     notify({
@@ -96,7 +97,7 @@ const selectedBingoHistory = computed(() => {
   history.value = await data.json()
 })()
 
-const socket = io('http://localhost:3000/volunteer')
+const socket = io(`${BACKEND_BASE_URL}/volunteer`)
 socket
   .on('result', (data: { bingo: string; key: string; index: number }) => {
     if (!history.value) return
