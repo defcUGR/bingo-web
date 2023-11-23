@@ -16,3 +16,5 @@ Después, ejecutar `pnpm i`, `npx prisma generate` y `npx prisma db push`.
 Para iniciar el backend, ejecutar `npx nodemon`.
 
 Para iniciar el frontend, ejecutar `pnpm dev`.
+
+Si se ejecuta `pnpm run build`, el propio backend servirá el frontend desde la URL base.
