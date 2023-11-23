@@ -7,6 +7,7 @@ Al clonar el repositorio, crear un archivo en la raíz `.env` con:
 ```dotenv
 DATABASE_URL=file:db.sqlite
 BINGO_PRESENTER_AUTH_TOKEN=passwd
+SERVER_PORT=3000
 VITE_BACKEND_BASE_URL=http://localhost:3000
 ```
 

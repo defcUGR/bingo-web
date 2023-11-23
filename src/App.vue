@@ -28,6 +28,7 @@
 import { IconAlertTriangle, IconCircleCheck, IconCircleX, IconInfoCircle } from '@tabler/icons-vue'
 import { io } from 'socket.io-client'
 import { ref } from 'vue'
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string
 
 const notificationComponent = (type: string) =>
   ({
@@ -38,7 +39,7 @@ const notificationComponent = (type: string) =>
   })[type]
 
 const socketOffline = ref(true)
-const socket = io('http://localhost:3000')
+const socket = io(`${BACKEND_BASE_URL}`)
 
 socket.on('connect', () => {
   socketOffline.value = false
