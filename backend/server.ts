@@ -7,6 +7,7 @@ import * as fs from 'fs'
 import type { AuthedEvent, BingoJSON, CallbackClearType, CallbackResultType } from './types'
 
 const BINGO_PRESENTER_AUTH_TOKEN = process.env.BINGO_PRESENTER_AUTH_TOKEN
+const SERVER_PORT = process.env.SERVER_PORT
 
 const prisma = new PrismaClient()
 
@@ -146,9 +147,9 @@ app.get('/api/history', async (req, res) => {
   res.json(results)
 })
 
-// Start the server listening on port 3000
-httpServer.listen(3000, () => {
-  console.log('Websocket server started on port 3000')
+// Start the server listening on SERVER_PORT
+httpServer.listen(SERVER_PORT, () => {
+  console.log(`Websocket server started on port ${SERVER_PORT}`)
 })
 
 httpServer.on('close', async () => {
