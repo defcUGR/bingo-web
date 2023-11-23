@@ -31,3 +31,4 @@ coverage
 typed-router.d.ts
 
 .env
+package-lock.json
