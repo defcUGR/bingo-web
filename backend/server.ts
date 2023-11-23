@@ -5,6 +5,7 @@ import { PrismaClient, type Result } from '@prisma/client'
 import { draw } from 'radash'
 import * as fs from 'fs'
 import type { AuthedEvent, BingoJSON, CallbackClearType, CallbackResultType } from './types'
+import * as path from 'path'
 
 const BINGO_PRESENTER_AUTH_TOKEN = process.env.BINGO_PRESENTER_AUTH_TOKEN
 const SERVER_PORT = process.env.SERVER_PORT
@@ -12,6 +13,7 @@ const SERVER_PORT = process.env.SERVER_PORT
 const prisma = new PrismaClient()
 
 const app = express()
+app.use(express.static('dist'))
 const httpServer = http.createServer(app)
 const io = new Server(httpServer)
 
@@ -54,7 +56,7 @@ io.of('presenter').on('connection', (socket) => {
         draw(BINGO['results']) as { key: string; value: string; index: number }
 
       let result = getResult()
-      while (await prisma.result.findFirst({ where: { result: result.key } })) {
+      while (await prisma.result.findFirst({ where: { result: result.key, bingo } })) {
         result = getResult()
       }
 
@@ -145,6 +147,10 @@ app.get('/api/history', async (req, res) => {
     results.push({ key: bingo.key, value: bingo.value, results: dbFiltered })
   }
   res.json(results)
+})
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve('./dist/index.html'))
 })
 
 // Start the server listening on SERVER_PORT
