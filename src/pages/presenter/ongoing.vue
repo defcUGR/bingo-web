@@ -63,64 +63,58 @@ onKeyDown(
   ['Backspace'],
   () => {
     if (controlKey.value) {
-      newValue()
+      socket.emit(
+        'clear',
+        { bingo: availableBingosStore.selected!.key, authToken: tokenStore.token },
+        (cbk: { error: string | null }) => {
+          if (cbk.error) {
+            notify({
+              type: 'error',
+              text: cbk.error
+            })
+          } else {
+            historyResults.value = []
+            showResult.value = undefined
+            showName.value = undefined
+            notify({
+              type: 'success',
+              text: 'Resultados anteriores limpiados'
+            })
+          }
+        }
+      )
     }
   },
   { dedupe: true }
 )
-onKeyDown(
-  ['Spacebar', ' '],
-  () => {
-    console.info('pressed space')
-    socket.emit(
-      'next',
-      {
-        bingo: availableBingosStore.selected!.key,
-        authToken: tokenStore.token
-      },
-      (
-        incoming:
-          | { error: string; result: undefined }
-          | {
-              error: null
-              result: { key: string; value: string }
-            }
-      ) => {
-        if (incoming.error) {
-          notify({
-            type: 'error',
-            text: incoming.error
-          })
-          return
-        }
-        if (showResult.value) historyResults.value.push(showResult.value)
-        showResult.value = incoming.result?.key
-        showName.value = incoming.result?.value
-      }
-    )
-  },
-  { dedupe: true }
-)
+onKeyDown(['Spacebar', ' '], () => newValue(), { dedupe: true })
 
 function newValue() {
+  console.info('requested new value')
   socket.emit(
-    'clear',
-    { bingo: availableBingosStore.selected!.key, authToken: tokenStore.token },
-    (cbk: { error: string | null }) => {
-      if (cbk.error) {
+    'next',
+    {
+      bingo: availableBingosStore.selected!.key,
+      authToken: tokenStore.token
+    },
+    (
+      incoming:
+        | { error: string; result: undefined }
+        | {
+            error: null
+            result: { key: string; value: string }
+          }
+    ) => {
+      if (incoming.error) {
         notify({
           type: 'error',
-          text: cbk.error
+          text: incoming.error
         })
-      } else {
-        historyResults.value = []
-        showResult.value = undefined
-        showName.value = undefined
-        notify({
-          type: 'success',
-          text: 'Resultados anteriores limpiados'
-        })
+        return
       }
+      if (showResult.value) historyResults.value.push(showResult.value)
+      showResult.value = incoming.result?.key
+      showName.value = incoming.result?.value
     }
   )
 }
