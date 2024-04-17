@@ -1,5 +1,7 @@
 <template>
-  <main class="relative flex flex-col justify-center items-center min-h-screen w-screen">
+  <main
+    class="relative flex flex-col justify-center items-center min-h-screen max-h-screen w-screen"
+  >
     <Confirmation
       v-if="showConfirmation"
       :id="'resetResultsConfirmation'"
@@ -9,7 +11,7 @@
       @cancel="() => (showConfirmation = false)"
     />
 
-    <div class="absolute top-4">
+    <div class="absolute top-4 text-center">
       <h1 class="!inline-block">
         Vista de presentador: {{ availableBingosStore.selected?.value }}
       </h1>
