@@ -12,6 +12,7 @@
 
     <div
       class="h-24 w-24 flex items-center justify-center rounded-lg bg-base-300 text-secondary dark:bg-base-content dark:text-primary-focus py-4 px-5 text-6xl font-semibold"
+      @click="newValue"
     >
       {{ showResult ?? '...' }}
     </div>
@@ -62,26 +63,7 @@ onKeyDown(
   ['Backspace'],
   () => {
     if (controlKey.value) {
-      socket.emit(
-        'clear',
-        { bingo: availableBingosStore.selected!.key, authToken: tokenStore.token },
-        (cbk: { error: string | null }) => {
-          if (cbk.error) {
-            notify({
-              type: 'error',
-              text: cbk.error
-            })
-          } else {
-            historyResults.value = []
-            showResult.value = undefined
-            showName.value = undefined
-            notify({
-              type: 'success',
-              text: 'Resultados anteriores limpiados'
-            })
-          }
-        }
-      )
+      newValue()
     }
   },
   { dedupe: true }
@@ -119,6 +101,29 @@ onKeyDown(
   },
   { dedupe: true }
 )
+
+function newValue() {
+  socket.emit(
+    'clear',
+    { bingo: availableBingosStore.selected!.key, authToken: tokenStore.token },
+    (cbk: { error: string | null }) => {
+      if (cbk.error) {
+        notify({
+          type: 'error',
+          text: cbk.error
+        })
+      } else {
+        historyResults.value = []
+        showResult.value = undefined
+        showName.value = undefined
+        notify({
+          type: 'success',
+          text: 'Resultados anteriores limpiados'
+        })
+      }
+    }
+  )
+}
 
 const backSelect = () => router.push('/presenter/select')
 </script>
