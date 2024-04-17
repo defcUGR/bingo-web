@@ -1,7 +1,5 @@
 <template>
-  <main
-    class="relative flex flex-col justify-center items-center min-h-screen max-h-screen w-screen"
-  >
+  <main class="relative flex flex-col justify-center items-center min-h-screen w-screen">
     <Confirmation
       v-if="showConfirmation"
       :id="'resetResultsConfirmation'"
